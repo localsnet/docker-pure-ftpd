@@ -4,21 +4,23 @@ version: '3'
 
 services:
   ftpd_server:
-    image: pureftpd:1.1
+    image: localsnet/pureftpd:1.1
     container_name: pure-ftpd
     ports:
       - "21:21"
-        #    - "30000-30009:30000-30009"
+      - "30000-30009:30000-30009"
     volumes: # remember to replace /folder_on_disk/ with the path to where you want to store the files on the host machine
-      - "./data/ftp/1:/home/ftp1/"
-      - "/data/ftp/passwd:/etc/pure-ftpd/passwd"
+      - "${PWD}/data/home:/home"
+      - "${PWD}/data/etc/ssl/private:/etc/ssl/private"
+      - "${PWD}/data/passwd:/etc/pure-ftpd/passwd"
 # uncomment for ssl/tls, see https://github.com/stilliard/docker-pure-ftpd#tls
 #      - "/folder_on_disk/ssl:/etc/ssl/private/"
     environment:
       PUBLICHOST: "localhost"
-      FTP_USER_NAME: ftp1
-      FTP_USER_PASS: mypass
-      FTP_USER_HOME: /home/ftp1
+      # FTP_USER_NAME: 
+      #FTP_USER_PASS: 
+      #FTP_USER_HOME: /home/ftp1
 # also for ssl/tls:
 #      ADDED_FLAGS: "--tls=2"
     restart: always
+    command: "bash /run.sh -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb --tls 3 -E -j -R -P <YOUR_DOMAIN> -d"
